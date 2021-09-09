@@ -69,6 +69,20 @@ def customers():
         
         print(".....")
         vehicle_code = int(input("enter vehicle code: "))
+        data = c.execute("select (code , vehicle_code , number) from service_providers")  # to check if vehicle is available
+        for x in c.fetchall():
+            if x[0] == code and x[1] == vehicle_code:
+                if x[2] > 0:
+                    print('booking succesful')
+                    
+                else:
+                    print("booking unsuccesful no units available")
+                    customers()
+                
+
+        start_time = int(input("enter start time of rental: "))
+        end_time = int(input("enter end time of rental: "))
+
 
     
 
@@ -80,7 +94,6 @@ if choice == 's':
     service_providers()
 elif choice == 'c':
     customers()
-
 
 
 
