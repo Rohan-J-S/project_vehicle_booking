@@ -4,18 +4,19 @@ c = base.cursor()
 from random import randint
 import pickle
 
-c.execute("drop table service_providers")
-c.execute("""create table service_providers( 
-    code int,
-    driver_name varchar(50),
-    vehicle_code int,
-   name varchar(50) ,
-    number int,
-   start_time int,
-   end_time int
+# c.execute("drop table service_providers")
+# c.execute("""create table service_providers( 
+#     code int,
+#     driver_name varchar(50),
+#     vehicle_code int,
+#    name varchar(50) ,
+#     number int,
+#    time int,
+#    available varchar(3)
 
-)
-""")
+
+# )
+# """)
 
 def service_providers():
     l = []
@@ -44,15 +45,16 @@ def service_providers():
             
         name_1 = input("enter car name: ")
         number_1 = int(input("enter number of units: "))
-        start_time_1 = int(input("enter start time: "))
-        end_time_1 = int(input("enter end time: "))
+     
+        time_1 = int(input("enter end time: "))
         others_1 = input("enter any other information: ")
-        c.execute("insert into service_providers(code , driver_name ,vehicle_code, name,number, start_time , end_time) values({}, '{}', '{}' , {} , {} , {})".format(code_1 , code_name_1 ,vehicle_code_1 name_1 ,number_1, start_time_1 , end_time_1)) #syntax for user input insert into table
+        available_1 = "Yes"
+        c.execute("insert into service_providers(code , driver_name ,vehicle_code, name,number, time , available) values({}, '{}',{}, '{}' , {} , {},'{}')".format(code_1 , code_name_1 ,vehicle_code_1, name_1 ,number_1, time_1 , available_1)) #syntax for user input insert into table
 
     base.commit()
 
 def customers():
-    print("code                 name                   vehicle code                   car model        units available   start time        end time")
+    print("code                 name                   vehicle code                   car model        units available        duration of rental")
     data = c.execute("select * from service_providers")
     for x in data.fetchall():
         for y in x:
@@ -69,32 +71,18 @@ def customers():
         
         print(".....")
         vehicle_code = int(input("enter vehicle code: "))
-        data = c.execute("select (code , vehicle_code , number) from service_providers")  # to check if vehicle is available
+        data = c.execute("select code , vehicle_code , number from service_providers")  # to check if vehicle is available
         for x in c.fetchall():
             if x[0] == code and x[1] == vehicle_code:
                 if x[2] > 0:
+                    time = int(input("enter time of rental: "))
                     print('booking succesful')
-                    
+
+
                 else:
                     print("booking unsuccesful no units available")
                     customers()
                 
-
-        start_time = int(input("enter start time of rental: "))
-        end_time = int(input("enter end time of rental: "))
-
-
-    
-
-
-
-
-choice = input('enter c for customer and s for service provider: ') 
-if choice == 's':
-    service_providers()
-elif choice == 'c':
-    customers()
-
 
 
 
