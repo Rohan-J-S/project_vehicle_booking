@@ -84,21 +84,28 @@ def customers():
                     data = c.execute("select * from service_providers")
                     l = []
                     for i in data.fetchall():
-                        l += i
+                        print(i)
+                        l += [i]
                     data = l
-                    print(data)
+                  
                     for y in range(len(data)):
-                        if (code , vehicle_code) == (data[y[0]] , data[y[2]]):
-                            units = data[y[4]]
+
+                        if (code , vehicle_code) == (data[y][0] , data[y][2]):
+                            units = data[y][4]
                             def reduce(code , vehicle_code, units , time):
-                                time.sleep(time*3600)
+                               
+                                print(units)
                                 units -= 1
-                                data[y] = (y[0] , y[1] , y[2] , y[3] , units , y[5])
-                                c.execute('TRUNCATE TABLE service_providers')
+                                print(units)
+                                data[y] = (data[y][0] , data[y][1] , data[y][2] , data[y][3] , units , data[y][5])
+                                print(data)
+                                c.execute('CLEAR TABLE service_providers')
                                 for z in data:
                                     code_1 , code_name_1 ,vehicle_code_1, name_1 ,number_1, time_1 , available_1 = z
 
                                     c.execute("insert into service_providers(code , driver_name ,vehicle_code, name,number, time , available) values({}, '{}',{}, '{}' , {} , {},'{}')".format(code_1 , code_name_1 ,vehicle_code_1, name_1 ,number_1, time_1 , available_1))
+                                    base.commit()
+                            reduce(data[y][0] , data[y][2] , data[y][4] , data[y][5])
 
 
                                 
@@ -119,6 +126,13 @@ if choice == 's':
     service_providers()
 elif choice == 'c':
     customers()
+    
+
+
+
+
+
+
     
 
 
