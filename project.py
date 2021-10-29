@@ -24,6 +24,7 @@ def timer(time):
 
 
 def service_providers():
+
     l = []
     f1 = open("service_providers.dat" , 'ab')
     f2 = open("service_providers.dat" , 'rb')
@@ -67,56 +68,68 @@ def customers():
         print()
     
     code = int(input("enter preffered service provider code from the table (0 to abort booking): ")) #user to input one of the service provider codes
+    if code == 0:
+        return None
     data = c.execute("select code from service_providers")
+    li = []
     for x in data.fetchall():
         
-        while code not in x:
-            print("code doesnt exist")
-            code = int(input("enter preffered service provider code from the table (0 to abort booking): "))
+        li += [x[0]]
+    print(li)
+    while code not in li:
+        print("code doesnt exist")
+        code = int(input("enter preffered service provider code from the table (0 to abort booking): "))
+        if code == 0:
+            return None
+            break
         
-        print(".....")
-        vehicle_code = int(input("enter vehicle code: "))
-        data = c.execute("select code , vehicle_code , number from service_providers")  # to check if vehicle is available
-        for x in c.fetchall():
-            if x[0] == code and x[1] == vehicle_code:
-                if x[2] > 0:
-                    time = int(input("enter time of rental: ")) #vehicle number to be reduces by one for the specified time period
-                    data = c.execute("select * from service_providers")
-                    l = []
-                    for i in data.fetchall():
-                        print(i)
-                        l += [i]
-                    data = l
+    print(".....")
+    vehicle_code = int(input("enter vehicle code: "))
+    data = c.execute("select code , vehicle_code , number from service_providers")  # to check if vehicle is available
+    for x in c.fetchall():
+        if x[0] == code and x[1] == vehicle_code:
+            if x[2] > 0:
+                time = int(input("enter time of rental: ")) #vehicle number to be reduces by one for the specified time period
+                data = c.execute("select * from service_providers")
+                l = []
+                for i in data.fetchall():
+                    print(i)
+                    l += [i]
+                data = l
                   
-                    for y in range(len(data)):
+                for y in range(len(data)):
 
-                        if (code , vehicle_code) == (data[y][0] , data[y][2]):
-                            units = data[y][4]
-                            def reduce(code , vehicle_code, units , time):
+                    if (code , vehicle_code) == (data[y][0] , data[y][2]):
+                        units = data[y][5]
+                        print(units)
+                        def reduce(code , vehicle_code, units , time):
+                            if units == 0:
+                                print("unsuccesful booking no units available")
+                                return None
                                
-                                print(units)
+                            else:
                                 units -= 1
-                                print(units)
-                                data[y] = (data[y][0] , data[y][1] , data[y][2] , data[y][3] , units , data[y][5])
+                            
+                                data[y] = (data[y][0] , data[y][1] , data[y][2] , data[y][3] ,data[y][4] , units ,  data[y][6])
                                 print(data)
-                                c.execute('CLEAR TABLE service_providers')
+                                c.execute('Delete from service_providers')
                                 for z in data:
                                     code_1 , code_name_1 ,vehicle_code_1, name_1 ,number_1, time_1 , available_1 = z
 
                                     c.execute("insert into service_providers(code , driver_name ,vehicle_code, name,number, time , available) values({}, '{}',{}, '{}' , {} , {},'{}')".format(code_1 , code_name_1 ,vehicle_code_1, name_1 ,number_1, time_1 , available_1))
                                     base.commit()
-                            reduce(data[y][0] , data[y][2] , data[y][4] , data[y][5])
+                        reduce(data[y][0] , data[y][2] , units , data[y][6])
 
 
                                 
                         
-                    print('booking succesful')
+                print('booking succesful')
 
 
-                else:
-                    print("booking unsuccesful no units available")
-                    customers()
-                    #recursive call if units unavailable
+            else:
+                print("booking unsuccesful no units available")
+                customers()
+                #recursive call if units unavailable
  
 
 
