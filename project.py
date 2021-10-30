@@ -1,9 +1,12 @@
 import sqlite3
+from time_module import timer
 base = sqlite3.connect("school.db")
 c = base.cursor()
 from random import randint
 import pickle
 import time
+from threading import Thread
+
 
 # c.execute("drop table service_providers")
 # c.execute("""create table service_providers( 
@@ -19,12 +22,10 @@ import time
 # )
 # """)
 
-def timer(time):
-    time.sleep(3600*time)
 
 
 def service_providers():
-
+    c.execute('Delete from service_providers')
     l = []
     f1 = open("service_providers.dat" , 'ab')
     f2 = open("service_providers.dat" , 'rb')
@@ -60,7 +61,7 @@ def service_providers():
     base.commit()
 
 def customers():
-    print("code                 name                   vehicle code                   car model        units available        duration of rental") #display of service provider details
+    print("code                 name                   vehicle code                car model        units available        duration of rental") #display of service provider details
     data = c.execute("select * from service_providers")
     for x in data.fetchall():
         for y in x:
@@ -100,7 +101,7 @@ def customers():
                 for y in range(len(data)):
 
                     if (code , vehicle_code) == (data[y][0] , data[y][2]):
-                        units = data[y][5]
+                        units = data[y][4]
                         print(units)
                         def reduce(code , vehicle_code, units , time):
                             if units == 0:
@@ -110,7 +111,7 @@ def customers():
                             else:
                                 units -= 1
                             
-                                data[y] = (data[y][0] , data[y][1] , data[y][2] , data[y][3] ,data[y][4] , units ,  data[y][6])
+                                data[y] = (data[y][0] , data[y][1] , data[y][2] , data[y][3] ,units ,data[y][5]  ,  data[y][6])
                                 print(data)
                                 c.execute('Delete from service_providers')
                                 for z in data:
@@ -118,19 +119,43 @@ def customers():
 
                                     c.execute("insert into service_providers(code , driver_name ,vehicle_code, name,number, time , available) values({}, '{}',{}, '{}' , {} , {},'{}')".format(code_1 , code_name_1 ,vehicle_code_1, name_1 ,number_1, time_1 , available_1))
                                     base.commit()
-                        reduce(data[y][0] , data[y][2] , units , data[y][6])
+                                    print('booking succesful')
+                                    return True
+                        reduce(data[y][0] , data[y][2] , units , data[y][5])
 
 
-                                
-                        
-                print('booking succesful')
 
 
             else:
                 print("booking unsuccesful no units available")
                 customers()
                 #recursive call if units unavailable
+
+def increase_units(code , vehicle_code , units , time):
+    data = c.execute("select * from service_providers")
+    l = []
+    for i in data.fetchall():
+        print(i)
+        l += [i]
+    data = l
+                  
+    for y in range(len(data)):
+
+        if (code , vehicle_code) == (data[y][0] , data[y][2]):
+            units += 1
+            data[y] = (data[y][0] , data[y][1] , data[y][2] , data[y][3] ,units ,data[y][5]  ,  data[y][6])
+
+            c.execute('Delete from service_providers')
+            for z in data:
+                code_1 , code_name_1 ,vehicle_code_1, name_1 ,number_1, time_1 , available_1 = z
+
+                c.execute("insert into service_providers(code , driver_name ,vehicle_code, name,number, time , available) values({}, '{}',{}, '{}' , {} , {},'{}')".format(code_1 , code_name_1 ,vehicle_code_1, name_1 ,number_1, time_1 , available_1))
+                base.commit()
+
  
+
+# the_func = Thread(target = customers.func)
+# the_func.start()
 
 
 #main
