@@ -6,7 +6,7 @@ from random import randint
 import pickle
 import time
 from threading import Thread
-
+from tabulate import tabulate
 
 # c.execute("drop table service_providers")
 # c.execute("""create table service_providers( 
@@ -25,7 +25,7 @@ from threading import Thread
 
 
 def service_providers():
-    c.execute('Delete from service_providers')
+    # c.execute('Delete from service_providers')
     l = []
     f1 = open("service_providers.dat" , 'ab')
     f2 = open("service_providers.dat" , 'rb')
@@ -62,12 +62,17 @@ def service_providers():
     base.commit()
 
 def customers():
-    print("code                 name                   vehicle code                car model        units available        duration of rental") #display of service provider details
+    temp_list = [('code' , 'name' , 'vehilcle code' , 'car model' , 'units available' , 'duration of rental' , 'available?')]
+
+    #print("code                 name                   vehicle code                car model        units available        duration of rental") #display of service provider details
     data = c.execute("select * from service_providers")
-    for x in data.fetchall():
-        for y in x:
-            print(y , end = "                 ")
-        print()
+    temp_list += data.fetchall()
+ 
+    print(tabulate(temp_list))
+    # for x in data.fetchall():
+    #     for y in x:
+    #         print(y , end = "                 ")
+    #     print()
     
     code = int(input("enter preffered service provider code from the table (0 to abort booking): ")) #user to input one of the service provider codes
     if code == 0:
@@ -173,11 +178,31 @@ def increase_units(code , vehicle_code , units , time):
 
 
 #main
+
 choice = input('enter c for customer and s for service provider: ') 
+while choice not in ['c' , 's']:
+    print("sorry that was an invalid input please input ('c' or 's') ")
+    choice = input('enter c for customer and s for service provider: ')
+
+
+
 if choice == 's':
-    service_providers()
+    try:
+        service_providers()
+    except:
+        print("sorry an error was raised please adhere to the input instructions")
+        print("redirecting.....")
+        service_providers()
+
 elif choice == 'c':
-    customers()
+    try:
+        customers()
+    except:
+        print("sorry an error was raised please adhere to the input instructions")
+        print("redirecting.....")
+        customers()
+    
+
     
 
 
