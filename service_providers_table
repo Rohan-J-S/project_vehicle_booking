@@ -1,0 +1,11 @@
+----  ----------  -------------  ---------  ---------------  ------------------  ----------
+code  name        vehilcle code  car model  units available  duration of rental  available?
+9361  muthappa    1              baleno     1                2                   Yes
+9361  muthappa    2              swift      1                2                   Yes
+4303  revanna     1              alto       1                3                   Yes
+9435  tourz cabs  1              innova     1                3                   Yes
+9435  tourz cabs  2              city       3                3                   Yes
+9435  tourz cabs  3              Nexon      8                3                   Yes
+9435  tourz cabs  4              taigun     5                3                   Yes
+9435  tourz cabs  5              kona       3                3                   Yes
+----  ----------  -------------  ---------  ---------------  ------------------  ----------
