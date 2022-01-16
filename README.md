@@ -7,8 +7,17 @@ Project description: The application can be used by 2 types of users, service pr
 2) customers: The customers will be shown the available vehicles for booking. They are to pick a convenient time slot for the booking depending on availability. (tentative) carpooling option where customer can choose from available seats from booked rides (tentative). 
 
 Table structure
-Code    driver name   vehicle code   vehicle name     number of units    start time    end time
-3326     Harsha             1                     Mahindra Thar     1                              8                      16
+----  ----------  -------------  ---------  ---------------  ------------------  ----------
+code  name        vehilcle code  car model  units available  duration of rental  available?
+9361  muthappa    1              baleno     1                2                   Yes
+9361  muthappa    2              swift      1                2                   Yes
+4303  revanna     1              alto       1                3                   Yes
+9435  tourz cabs  1              innova     1                3                   Yes
+9435  tourz cabs  2              city       3                3                   Yes
+9435  tourz cabs  3              Nexon      8                3                   Yes
+9435  tourz cabs  4              taigun     5                3                   Yes
+9435  tourz cabs  5              kona       3                3                   Yes
+----  ----------  -------------  ---------  ---------------  ------------------  ----------
 
 User inputs:
 1) service provider: driver names, vehicle name(model), number of units, start time of availability, end time of availability.
