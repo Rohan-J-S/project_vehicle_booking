@@ -78,6 +78,7 @@ c = base.cursor()
 from random import randint
 import pickle
 import time
+from datetime import datetime
 from threading import Thread
 from tabulate import tabulate
 
@@ -186,7 +187,9 @@ def customers():
         if x[0] == code and x[1] == vehicle_code:
             
             if x[2] > 0:
-                time = int(input("enter time of rental: ")) #vehicle number to be reduces by one for the specified time period
+                time = int(input("enter number of hours of rental: ")) #vehicle number to be reduces by one for the specified time period
+                current_time = datetime.now().hour #current hour is stored
+            
                 data = c.execute("select * from service_providers")
                 l = []
                 for i in data.fetchall():
@@ -199,25 +202,29 @@ def customers():
                     if (code , vehicle_code) == (data[y][0] , data[y][2]):
                         units = data[y][4]
                         print(units)
-                        def reduce(code , vehicle_code, units , time):
-                            if units == 0:
-                                print("unsuccesful booking no units available")
+                        def reduce(code , vehicle_code, units , start_time , end_time):
+                            # print(current_time , time)
+                            if units == 0 or not(start_time < current_time < current_time + time < end_time ):  #to check if time is within valid time limit 
+                                if units == 0:   
+                                    print("unsuccesful booking no units available")
+                                else:
+                                    print("sorry units not available for that time slot")
                                 return None
                                
                             else:
                                 units -= 1
                             
-                                data[y] = (data[y][0] , data[y][1] , data[y][2] , data[y][3] ,units ,data[y][5]  ,  data[y][6])
+                                data[y] = (data[y][0] , data[y][1] , data[y][2] , data[y][3] ,units ,data[y][5]  ,  data[y][6],  data[y][7],  data[y][8])
                                 print(data)
                                 c.execute('Delete from service_providers')
                                 for z in data:
-                                    code_1 , code_name_1 ,vehicle_code_1, name_1 ,number_1, time_1 , available_1 = z
+                                    code_1 , code_name_1 ,vehicle_code_1, name_1 ,number_1, start_time_1 ,end_time_1 , cost_per_hr_1, others_1 = z
 
-                                    c.execute("insert into service_providers(code , driver_name ,vehicle_code, name,number, time , available) values({}, '{}',{}, '{}' , {} , {},'{}')".format(code_1 , code_name_1 ,vehicle_code_1, name_1 ,number_1, time_1 , available_1))
+                                    c.execute("insert into service_providers(code , driver_name ,vehicle_code, name,number, start_time ,end_time  , cost_per_hr , others) values({}, '{}',{}, '{}' , {} ,{}, {} , {} , '{}')".format(code_1 , code_name_1 ,vehicle_code_1, name_1 ,number_1, start_time_1 ,end_time_1 , cost_per_hr_1, others_1))
                                     base.commit()
-                                    print('booking succesful')
+                                    print('booking succesful! Driver will pick you up at the provided adress shortly')
                                     return True
-                        reduce(data[y][0] , data[y][2] , units , data[y][5])
+                        reduce(data[y][0] , data[y][2] , units , data[y][5] , data[y][6])
 
 
 
@@ -275,17 +282,57 @@ if choice == 's':
         service_providers()
 
 elif choice == 'c':
-    try:  #exception handler to catch wrong input data type
-        customers()
-    except:
-        print("sorry an error was raised please adhere to the input instructions")
-        print("redirecting.....")
-        customers()
+    # try:  #exception handler to catch wrong input data type
+    customers()
+    # except:
+    #     print("sorry an error was raised please adhere to the input instructions")
+    #     print("redirecting.....")
+    #     customers()
 
 
 #function that checks if times in start and end time
 # 3 parameters: start time , end time, duration of rental
 # checks if current time , and current time + duration of rental is within start and end time
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    
 
 
