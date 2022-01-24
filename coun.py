@@ -2,6 +2,7 @@
 
 
 import sqlite3
+from tracemalloc import start
 from time_module import timer
 base = sqlite3.connect("school.db")
 c = base.cursor()
@@ -80,6 +81,17 @@ def service_providers():
         number_1 = int(input("enter number of units: "))
         start_time_1 = int(input("enter start time (hour in integer format in 24 hour clock): "))
         end_time_1 = int(input("enter end time (hour in integer format in 24 hour clock): "))
+
+        while start_time_1 not in range(0,24) or end_time_1 not in range(0 , 24):
+            print("sorry that the time given wasnt valid")
+            start_time_1 = int(input("enter start time (hour in integer format in 24 hour clock): "))
+            end_time_1 = int(input("enter end time (hour in integer format in 24 hour clock): "))
+        
+        while start_time_1 > end_time_1:
+            print("sorry overnight shifts not allowed")
+            start_time_1 = int(input("enter start time (hour in integer format in 24 hour clock): "))
+            end_time_1 = int(input("enter end time (hour in integer format in 24 hour clock): "))
+            
         others_1 = input("enter any other information (less than 100 characters): ")
         # available_1 = "Yes"
         cost_per_hr_1 = int(input("enter cost per hour in rupees: "))  
@@ -96,19 +108,42 @@ def customers():
     #print("code                 name                   vehicle code                car model        units available        duration of rental") #display of service provider details
     data = c.execute("select * from service_providers")
     temp_list += data.fetchall()
- 
+    print("""
+    1. pick up asap
+    2. pick up at scheduled time
+    """)
+    choice_1 = int(input("enter your choice(1 or 2): "))
+    while choice_1 not in [1,2]:
+        print('sorry that input was not valid')
+        choice_1 = int(input("enter your choice(1 or 2): "))
+    if choice_1 == 1:
+        current_time = datetime.now().hour
+    else:
+        current_time = int(input("enter pickup time (in 24 hour clock): "))
+        while current_time not in range(0 , 24):
+            print('sorry that input was not valid')
+            current_time = int(input("enter pickup time (in 24 hour clock): "))
+
+
     for x in range(1 , len(temp_list)):
+        if current_time not in range(temp_list[x][5] , temp_list[x][6]):
+            a,b,d,e,f,g,h,j,k= temp_list[x] #unpack and repack
+            f = 0
+            temp_list[x] = (a,b,d,e,f,g,h,j,k)
         """to compare with customers log table and reduce the units for the cars that are currently being used"""
         data = c.execute("select code , vehicle_code , start_time , end_time from customers_log")
         for y in data.fetchall():
             
             if (temp_list[x][0] , temp_list[x][2]) == (y[0] , y[1]):
-                if datetime.now().hour in range(y[2] , y[3] + 1):
+                
+                if current_time in range(y[2] , y[3] + 1):
                     
                     a,b,d,e,f,g,h,j,k= temp_list[x] #unpack and repack
-                    f -= 1
+                    if f != 0:
+                        f -= 1
                     temp_list[x] = (a,b,d,e,f,g,h,j,k)
-                   
+            
+                  
 
 
 
@@ -155,7 +190,11 @@ def customers():
             
             if x[2] > 0:
                 time = int(input("enter number of hours of rental: ")) #vehicle number to be reduces by one for the specified time period
-                current_time = datetime.now().hour #current hour is stored
+                if current_time + time > 24:
+                    print("sorry overnight bookings not available")
+                    time = int(input("enter number of hours of rental: "))
+
+                # current_time = datetime.now().hour #current hour is stored
             
                 # data = c.execute("select * from service_providers")
             
