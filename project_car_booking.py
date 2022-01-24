@@ -29,20 +29,18 @@ from tabulate import tabulate
 
 # )
 # """)
-
+# c.execute("drop table customers_log")
 # c.execute("""create table customers_log( 
-#     customer_code int primary key,
-#     customer_name varchar(100),
+#     date datetime,
+#     customer_name varchar(100) primary key,
 #     adress varchar(100),
 #     code int,
 #     vehicle_code int,
 #     start_time int,
 #     end_time int
-
-
-
+    
 # )
-# """)
+#  """)
 
 
 
@@ -116,13 +114,29 @@ def customers():
     while choice_1 not in [1,2]:
         print('sorry that input was not valid')
         choice_1 = int(input("enter your choice(1 or 2): "))
+
     if choice_1 == 1:
         current_time = datetime.now().hour
+        currentDay = datetime.now().day
+        currentMonth = datetime.now().month
+        currentYear = datetime.now().year
+        entered_date = str(currentYear) + str(currentMonth) + str(currentDay)
+
     else:
         current_time = int(input("enter pickup time (in 24 hour clock): "))
-        while current_time not in range(0 , 24):
+        entered_date = input("enter booking data (format YYYY-MM-DD): ")
+
+        con_1 = int(entered_date[:4]) < datetime.now().year
+        con_2 = int(entered_date[5:7]) < datetime.now().month and int(entered_date[:4]) == datetime.now().year
+        con_3 = int(entered_date[8:10]) < datetime.now().day and int(entered_date[5:7]) == datetime.now().month and int(entered_date[:4]) == datetime.now().year
+
+        while current_time not in range(0 , 24) or con_1 or con_2 or con_3:
             print('sorry that input was not valid')
             current_time = int(input("enter pickup time (in 24 hour clock): "))
+            entered_date = input("enter booking data (format YYYY-MM-DD): ")
+            con_1 = int(entered_date[:4]) < datetime.now().year
+            con_2 = int(entered_date[5:7]) < datetime.now().month and int(entered_date[:4]) == datetime.now().year
+            con_3 = int(entered_date[8:10]) < datetime.now().day and int(entered_date[5:7]) == datetime.now().month and int(entered_date[:4]) == datetime.now().year
 
 
     for x in range(1 , len(temp_list)):
@@ -132,12 +146,12 @@ def customers():
             temp_list[x] = (a,b,d,e,f,g,h,j,k)
         """to compare with customers log table and reduce the units for the cars that are currently being used"""
         data = c.execute("select code , vehicle_code , start_time , end_time from customers_log")
-        data = c.execute("select start_time , end_time from customers_log where code = {} and vehicle_code = {}".format(temp_list[x][0] , temp_list[x][2]))
+        data = c.execute("select start_time , end_time , date from customers_log where code = {} and vehicle_code = {}".format(temp_list[x][0] , temp_list[x][2]))
         for y in data.fetchall():
-        
-                
-            if current_time in range(y[0] , y[1] + 1):      
+
+            if current_time in range(y[0] , y[1] + 1) and entered_date == y[2]:      
                 a,b,d,e,f,g,h,j,k= temp_list[x] #unpack and repack
+
                 if f != 0:
                     f -= 1
                 temp_list[x] = (a,b,d,e,f,g,h,j,k)
@@ -220,8 +234,8 @@ def customers():
                                
                             else:
                                 
-                                    print('booking succesful! Driver will pick you up at the provided adress shortly')
-                                    c.execute("insert into customers_log(customer_code , customer_name ,adress, code ,vehicle_code, start_time ,end_time ) values({}, '{}','{}', {} , {} ,{}, {})".format(randint(1000,9999)  ,customer_name_1, address ,code,vehicle_code, current_time , current_time + 1 + time )) #syntax for user input insert into table
+                                    print('booking succesful! Driver will pick you up at the provided adress at the requested time')
+                                    c.execute("insert into customers_log(date , customer_name ,adress, code ,vehicle_code, start_time ,end_time ) values('{}', '{}','{}', {} , {} ,{}, {})".format(entered_date  ,customer_name_1, address ,code,vehicle_code, current_time , current_time + 1 + time )) #syntax for user input insert into table
                                     base.commit()
                                     return True
                         reduce(data[y][0] , data[y][2] , units , data[y][5] , data[y][6])
