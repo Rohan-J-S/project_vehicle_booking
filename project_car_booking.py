@@ -128,7 +128,7 @@ def customers():
             currentMonth = '0' + str(currentMonth)
 
         currentYear = datetime.now().year
-        
+
         entered_date = str(currentYear) + "-" + str(currentMonth) + "-"+ str(currentDay) #to check availability based on date
         time = int(input("enter number of hours of rental: "))
         while current_time + time >= 24:
@@ -146,15 +146,18 @@ def customers():
         con_1 = int(entered_date[:4]) < datetime.now().year
         con_2 = int(entered_date[5:7]) < datetime.now().month and int(entered_date[:4]) == datetime.now().year
         con_3 = int(entered_date[8:10]) < datetime.now().day and int(entered_date[5:7]) == datetime.now().month and int(entered_date[:4]) == datetime.now().year
-        '''con 1 con 2 and con 3 are conditions to ensure that the date enteres isnt from the past'''
+        con_4 = current_time <= datetime.now().hour and int(entered_date[8:10]) == datetime.now().day and int(entered_date[5:7]) == datetime.now().month and int(entered_date[:4]) == datetime.now().year
+        print(current_time , datetime.now().hour , con_4 )
+        '''con 1 con 2 con 3 and con 4 are conditions to ensure that the date enteres isnt from the past'''
 
-        while current_time not in range(0 , 24) or con_1 or con_2 or con_3:
+        while current_time not in range(0 , 24) or con_1 or con_2 or con_3 or con_4:
             print('sorry that input was not valid')
             current_time = int(input("enter pickup time (in 24 hour clock): "))
             entered_date = input("enter booking data (format YYYY-MM-DD): ")
             con_1 = int(entered_date[:4]) < datetime.now().year
             con_2 = int(entered_date[5:7]) < datetime.now().month and int(entered_date[:4]) == datetime.now().year
             con_3 = int(entered_date[8:10]) < datetime.now().day and int(entered_date[5:7]) == datetime.now().month and int(entered_date[:4]) == datetime.now().year
+            con_4 = current_time <= datetime.now().hour and int(entered_date[8:10]) == datetime.now().day and int(entered_date[5:7]) == datetime.now().month and int(entered_date[:4]) == datetime.now().year
 
 
     for x in range(1 , len(temp_list)):
