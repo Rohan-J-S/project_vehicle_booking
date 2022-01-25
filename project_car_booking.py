@@ -117,18 +117,36 @@ def customers():
 
     if choice_1 == 1:
         current_time = datetime.now().hour
+        
+
         currentDay = datetime.now().day
+        if len(str(currentDay)) == 1:
+            currentDay = '0' + str(currentDay)
+
         currentMonth = datetime.now().month
+        if len(str(currentMonth)) == 1:
+            currentMonth = '0' + str(currentMonth)
+
         currentYear = datetime.now().year
-        entered_date = str(currentYear) + str(currentMonth) + str(currentDay)
+        
+        entered_date = str(currentYear) + "-" + str(currentMonth) + "-"+ str(currentDay) #to check availability based on date
+        time = int(input("enter number of hours of rental: "))
+        while current_time + time >= 24:
+            print("sorry overnight bookings not available")
+            time = int(input("enter number of hours of rental: "))
 
     else:
         current_time = int(input("enter pickup time (in 24 hour clock): "))
         entered_date = input("enter booking data (format YYYY-MM-DD): ")
+        time = int(input("enter number of hours of rental: ")) #vehicle number to be reduces by one for the specified time period
+        while current_time + time >= 24:
+            print("sorry overnight bookings not available")
+            time = int(input("enter number of hours of rental: "))
 
         con_1 = int(entered_date[:4]) < datetime.now().year
         con_2 = int(entered_date[5:7]) < datetime.now().month and int(entered_date[:4]) == datetime.now().year
         con_3 = int(entered_date[8:10]) < datetime.now().day and int(entered_date[5:7]) == datetime.now().month and int(entered_date[:4]) == datetime.now().year
+        '''con 1 con 2 and con 3 are conditions to ensure that the date enteres isnt from the past'''
 
         while current_time not in range(0 , 24) or con_1 or con_2 or con_3:
             print('sorry that input was not valid')
@@ -148,8 +166,12 @@ def customers():
         data = c.execute("select code , vehicle_code , start_time , end_time from customers_log")
         data = c.execute("select start_time , end_time , date from customers_log where code = {} and vehicle_code = {}".format(temp_list[x][0] , temp_list[x][2]))
         for y in data.fetchall():
-
-            if current_time in range(y[0] , y[1] + 1) and entered_date == y[2]:      
+            c1 = current_time in range(y[0] , y[1] + 1) and entered_date == y[2]
+            c2 = (current_time + time) in range(y[0] , y[1] + 1) and entered_date == y[2]
+            c3 = current_time <= y[0] <= y[1] + 1 <= current_time + time and entered_date == y[2]
+            print(c1 , c2 , c3)
+            print(current_time , current_time + time , entered_date)
+            if c1 or c2 or c3:     
                 a,b,d,e,f,g,h,j,k= temp_list[x] #unpack and repack
 
                 if f != 0:
@@ -196,16 +218,16 @@ def customers():
 
 
 
-    data = c.execute("select code , vehicle_code , number from service_providers")  # to check if vehicle is available
-
-    for x in c.fetchall():
-        if x[0] == code and x[1] == vehicle_code:
+    # data = c.execute("select code , vehicle_code , number from service_providers")  # to check if vehicle is available
+    data = temp_list[1::]
+    for x in data:
+        if x[0] == code and x[2] == vehicle_code:
             
-            if x[2] > 0:
-                time = int(input("enter number of hours of rental: ")) #vehicle number to be reduces by one for the specified time period
-                if current_time + time > 24:
-                    print("sorry overnight bookings not available")
-                    time = int(input("enter number of hours of rental: "))
+            if x[4] > 0:
+                # time = int(input("enter number of hours of rental: ")) #vehicle number to be reduces by one for the specified time period
+                # if current_time + time > 24:
+                #     print("sorry overnight bookings not available")
+                #     time = int(input("enter number of hours of rental: "))
 
                 # current_time = datetime.now().hour #current hour is stored
             
@@ -296,12 +318,12 @@ if choice == 's':
         service_providers()
 
 elif choice == 'c':
-    try:  #exception handler to catch wrong input data type
-        customers()
-    except:
-        print("sorry an error was raised please adhere to the input instructions")
-        print("redirecting.....")
-        customers()
+    # try:  #exception handler to catch wrong input data type
+    customers()
+    # except:
+    #     print("sorry an error was raised please adhere to the input instructions")
+    #     print("redirecting.....")
+    #     customers()
 
 
 #function that checks if times in start and end time
