@@ -45,6 +45,10 @@ from tabulate import tabulate
 
 
 def service_providers():
+    print("Welcome to.............\
+        please fill in the following few details to sign up as a service provider\
+        please note: overnight service isnt supported"
+         )
     # c.execute('Delete from service_providers')
     # l = []
     # f1 = open("service_providers.dat" , 'ab')
@@ -59,10 +63,12 @@ def service_providers():
     code_name_1 = input("enter name of organization/driver: ")
     code_1 = randint(1000 , 9999)
     data = c.execute("select code from service_providers")
-    for x in data.fetchall():
-        while (code_1 , ) in x:  #checks if the code aldready exists (to be verified)
-            code_1 = randint(1000 , 9999)
 
+    l_temp = set( [ x[0] for x in data.fetchall() ] )
+    print(l_temp)
+
+    while code_1 in l_temp:  #checks if the code aldready exists (to be verified)
+        code_1 = randint(1000 , 9999)
 
     # while {code_1 , 1} in l: #dict with key as code and value as one to check if it is repeated
     #     code_1 = randint(1000 , 9999)
@@ -80,15 +86,16 @@ def service_providers():
         start_time_1 = int(input("enter start time (hour in integer format in 24 hour clock): "))
         end_time_1 = int(input("enter end time (hour in integer format in 24 hour clock): "))
 
-        while start_time_1 not in range(0,24) or end_time_1 not in range(0 , 24):
+        while start_time_1 not in range(0,24) or end_time_1 not in range(0 , 24) or start_time_1 > end_time_1:
             print("sorry that the time given wasnt valid")
+            print("overnight shifts not allowed")
             start_time_1 = int(input("enter start time (hour in integer format in 24 hour clock): "))
             end_time_1 = int(input("enter end time (hour in integer format in 24 hour clock): "))
         
-        while start_time_1 > end_time_1:
-            print("sorry overnight shifts not allowed")
-            start_time_1 = int(input("enter start time (hour in integer format in 24 hour clock): "))
-            end_time_1 = int(input("enter end time (hour in integer format in 24 hour clock): "))
+        # while start_time_1 > end_time_1:
+        #     print("sorry overnight shifts not allowed")
+        #     start_time_1 = int(input("enter start time (hour in integer format in 24 hour clock): "))
+        #     end_time_1 = int(input("enter end time (hour in integer format in 24 hour clock): "))
             
         others_1 = input("enter any other information (less than 100 characters): ")
         # available_1 = "Yes"
@@ -122,10 +129,14 @@ def customers():
         currentDay = datetime.now().day
         if len(str(currentDay)) == 1:
             currentDay = '0' + str(currentDay)
+        else:
+            currentDay = str(currentDay)
 
         currentMonth = datetime.now().month
         if len(str(currentMonth)) == 1:
             currentMonth = '0' + str(currentMonth)
+        else:
+            currentMonth = str(currentMonth)
 
         currentYear = datetime.now().year
 
