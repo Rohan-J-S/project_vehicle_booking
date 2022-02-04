@@ -92,6 +92,8 @@ def service_providers():
                 print("overnight shifts not allowed")
             start_time_1 = int(input("enter start time (hour in integer format in 24 hour clock): "))
             end_time_1 = int(input("enter end time (hour in integer format in 24 hour clock): "))
+            c1 = start_time_1 not in range(0,24) or end_time_1 not in range(0 , 24)
+            c2 = start_time_1 > end_time_1
         
         # while start_time_1 > end_time_1:
         #     print("sorry overnight shifts not allowed")
@@ -283,26 +285,26 @@ def customers():
                 #recursive call if units unavailable
 
 
-def increase_units(code , vehicle_code , units , time):
-    data = c.execute("select * from service_providers")
-    l = []
-    for i in data.fetchall():
-        print(i)
-        l += [i]
-    data = l
+# def increase_units(code , vehicle_code , units , time):
+#     data = c.execute("select * from service_providers")
+#     l = []
+#     for i in data.fetchall():
+#         print(i)
+#         l += [i]
+#     data = l
                   
-    for y in range(len(data)):
+#     for y in range(len(data)):
 
-        if (code , vehicle_code) == (data[y][0] , data[y][2]):
-            units += 1
-            data[y] = (data[y][0] , data[y][1] , data[y][2] , data[y][3] ,units ,data[y][5]  ,  data[y][6])
+#         if (code , vehicle_code) == (data[y][0] , data[y][2]):
+#             units += 1
+#             data[y] = (data[y][0] , data[y][1] , data[y][2] , data[y][3] ,units ,data[y][5]  ,  data[y][6])
 
-            c.execute('Delete from service_providers')
-            for z in data:
-                code_1 , code_name_1 ,vehicle_code_1, name_1 ,number_1, time_1 , available_1 = z
+#             c.execute('Delete from service_providers')
+#             for z in data:
+#                 code_1 , code_name_1 ,vehicle_code_1, name_1 ,number_1, time_1 , available_1 = z
 
-                c.execute("insert into service_providers(code , driver_name ,vehicle_code, name,number, time , available) values({}, '{}',{}, '{}' , {} , {},'{}')".format(code_1 , code_name_1 ,vehicle_code_1, name_1 ,number_1, time_1 , available_1))
-                base.commit()
+#                 c.execute("insert into service_providers(code , driver_name ,vehicle_code, name,number, time , available) values({}, '{}',{}, '{}' , {} , {},'{}')".format(code_1 , code_name_1 ,vehicle_code_1, name_1 ,number_1, time_1 , available_1))
+#                 base.commit()
 
  
 
