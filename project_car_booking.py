@@ -2,15 +2,11 @@
 
 
 import sqlite3
-from tracemalloc import start
 from time_module import timer
 base = sqlite3.connect("school.db")
 c = base.cursor()
 from random import randint
-import pickle
-import time
 from datetime import datetime
-from threading import Thread
 from tabulate import tabulate
 
 # c.execute("drop table service_providers")
@@ -47,8 +43,10 @@ from tabulate import tabulate
 def service_providers():
     print("Welcome to.............\
         please fill in the following few details to sign up as a service provider\
-        please note: overnight service isnt supported"
-         )
+        please note:\
+        overnight service isnt supported\
+        after every trip, a buffer period of 1 hour will be alloted"
+        )
     # c.execute('Delete from service_providers')
     # l = []
     # f1 = open("service_providers.dat" , 'ab')
@@ -85,10 +83,13 @@ def service_providers():
         number_1 = int(input("enter number of units: "))
         start_time_1 = int(input("enter start time (hour in integer format in 24 hour clock): "))
         end_time_1 = int(input("enter end time (hour in integer format in 24 hour clock): "))
-
-        while start_time_1 not in range(0,24) or end_time_1 not in range(0 , 24) or start_time_1 > end_time_1:
-            print("sorry that the time given wasnt valid")
-            print("overnight shifts not allowed")
+        c1 = start_time_1 not in range(0,24) or end_time_1 not in range(0 , 24)
+        c2 = start_time_1 > end_time_1
+        while c1 or c2:
+            if c1:
+                print("sorry that the time given wasnt valid")
+            else:
+                print("overnight shifts not allowed")
             start_time_1 = int(input("enter start time (hour in integer format in 24 hour clock): "))
             end_time_1 = int(input("enter end time (hour in integer format in 24 hour clock): "))
         
@@ -106,6 +107,7 @@ def service_providers():
     base.commit()
 
 def customers():
+    print("Greetings customer, please fill in the necessary details to proceed with the booking")
     address = input('enter your address: ')
     customer_name_1 = input('please enter your name: ')
     temp_list = [('code' , 'name' , 'vehicle code' , 'car model' , 'units available' , 'start time' , "end time" , 'cost per hour' , 'other information')]
@@ -147,8 +149,8 @@ def customers():
             time = int(input("enter number of hours of rental: "))
 
     else:
+        entered_date = input("enter booking date (format YYYY-MM-DD): ")
         current_time = int(input("enter pickup time (in 24 hour clock): "))
-        entered_date = input("enter booking data (format YYYY-MM-DD): ")
         time = int(input("enter number of hours of rental: ")) #vehicle number to be reduces by one for the specified time period
         while current_time + time >= 24:
             print("sorry overnight bookings not available")
@@ -163,8 +165,8 @@ def customers():
 
         while current_time not in range(0 , 24) or con_1 or con_2 or con_3 or con_4:
             print('sorry that input was not valid')
-            current_time = int(input("enter pickup time (in 24 hour clock): "))
             entered_date = input("enter booking data (format YYYY-MM-DD): ")
+            current_time = int(input("enter pickup time (in 24 hour clock): "))
             con_1 = int(entered_date[:4]) < datetime.now().year
             con_2 = int(entered_date[5:7]) < datetime.now().month and int(entered_date[:4]) == datetime.now().year
             con_3 = int(entered_date[8:10]) < datetime.now().day and int(entered_date[5:7]) == datetime.now().month and int(entered_date[:4]) == datetime.now().year
@@ -177,7 +179,7 @@ def customers():
             f = 0
             temp_list[x] = (a,b,d,e,f,g,h,j,k)
         """to compare with customers log table and reduce the units for the cars that are currently being used"""
-        data = c.execute("select code , vehicle_code , start_time , end_time from customers_log")
+        # data = c.execute("select code , vehicle_code , start_time , end_time from customers_log")
         data = c.execute("select start_time , end_time , date from customers_log where code = {} and vehicle_code = {}".format(temp_list[x][0] , temp_list[x][2]))
         for y in data.fetchall():
             c1 = current_time in range(y[0] , y[1] + 1) and entered_date == y[2]
@@ -193,9 +195,6 @@ def customers():
                 temp_list[x] = (a,b,d,e,f,g,h,j,k)
             
                   
-
-
-
  
     print(tabulate(temp_list))
     # for x in data.fetchall():
@@ -217,7 +216,7 @@ def customers():
         code = int(input("enter preffered service provider code from the table (0 to abort booking): "))
         if code == 0:
             return None
-            break
+            
         
     print(".....")
     vehicle_code = int(input("enter vehicle code: "))
