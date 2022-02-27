@@ -11,7 +11,7 @@ from tabulate import tabulate
 
 # c.execute("drop table service_providers")
 # c.execute("""create table service_providers( 
-#     code int primary key,
+#     code inty,
 #     driver_name varchar(50),
 #     vehicle_code int,
 #    name varchar(50) ,
@@ -77,6 +77,7 @@ def service_providers():
     types = int(input("enter number of car models: "))
     vehicle_code_1 = 0
     for x in range(types):
+        print("please enter details for car" , x+1)
         vehicle_code_1 += 1
             
         name_1 = input("enter car name: ")
@@ -272,6 +273,7 @@ def customers():
                             else:
                                 
                                     print('booking succesful! Driver will pick you up at the provided adress at the requested time')
+                                    print("final cost is: " , data[y][7]*time)
                                     c.execute("insert into customers_log(date , customer_name ,adress, code ,vehicle_code, start_time ,end_time ) values('{}', '{}','{}', {} , {} ,{}, {})".format(entered_date  ,customer_name_1, address ,code,vehicle_code, current_time , current_time + 1 + time )) #syntax for user input insert into table
                                     base.commit()
                                     return True
@@ -322,23 +324,24 @@ while choice not in ['c' , 's']:
 
 
 if choice == 's':
-    try: #exception handler to catch wrong input data type
-        service_providers()
-        data = c.execute("select * from  service_providers")
-        for x in data.fetchall():
-            print(x)
+    # try: #exception handler to catch wrong input data type
+    
+    service_providers()
+        # data = c.execute("select * from  service_providers")
+        # for x in data.fetchall():
+        #     print(x)
+    # except:
+    #     print("sorry an error was raised please adhere to the input instructions")
+        # print("redirecting.....")
+        # service_providers()
+
+elif choice == 'c':
+    try:  #exception handler to catch wrong input data type
+        customers()
     except:
         print("sorry an error was raised please adhere to the input instructions")
         print("redirecting.....")
-        service_providers()
-
-elif choice == 'c':
-    # try:  #exception handler to catch wrong input data type
-    customers()
-    # except:
-    #     print("sorry an error was raised please adhere to the input instructions")
-    #     print("redirecting.....")
-    #     customers()
+        # customers()
 
 
 #function that checks if times in start and end time
