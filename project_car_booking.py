@@ -2,6 +2,7 @@
 
 
 import sqlite3
+from unicodedata import name
 from time_module import timer
 base = sqlite3.connect("school.db")
 c = base.cursor()
@@ -158,23 +159,48 @@ def customers():
         while current_time + time >= 24:
             print("sorry overnight bookings not available")
             time = int(input("enter number of hours of rental: "))
+        if int(entered_date[5:7]) in [1,3,5,7,8,10,12]:
+            days = 31
+        elif int(entered_date[5:7]) in [2,4,6,9,11]:
+            days = 30
+        else:
+            year = int(entered_date[:4])
+            is_leapyear = year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+            if is_leapyear:
+                days = 29
+            else:
+                days = 28
 
-        con_1 = int(entered_date[:4]) < datetime.now().year
-        con_2 = int(entered_date[5:7]) < datetime.now().month and int(entered_date[:4]) == datetime.now().year
+        con_1 = (int(entered_date[:4]) < datetime.now().year) or not(0 < int(entered_date[8:10]) < days)
+        con_2 = (int(entered_date[5:7]) < datetime.now().month and int(entered_date[:4]) == datetime.now().year) or not(0 <int(entered_date[5:7]) < 12)
         con_3 = int(entered_date[8:10]) < datetime.now().day and int(entered_date[5:7]) == datetime.now().month and int(entered_date[:4]) == datetime.now().year
         con_4 = current_time <= datetime.now().hour and int(entered_date[8:10]) == datetime.now().day and int(entered_date[5:7]) == datetime.now().month and int(entered_date[:4]) == datetime.now().year
-        print(current_time , datetime.now().hour , con_4 )
+        # print(current_time , datetime.now().hour , con_4 )
         '''con 1 con 2 con 3 and con 4 are conditions to ensure that the date enteres isnt from the past'''
 
         while current_time not in range(0 , 24) or con_1 or con_2 or con_3 or con_4:
             print('sorry that input was not valid')
             entered_date = input("enter booking data (format YYYY-MM-DD): ")
             current_time = int(input("enter pickup time (in 24 hour clock): "))
-            con_1 = int(entered_date[:4]) < datetime.now().year
-            con_2 = int(entered_date[5:7]) < datetime.now().month and int(entered_date[:4]) == datetime.now().year
+            time = int(input("enter number of hours of rental: "))
+            while current_time + time >= 24:
+                print("sorry overnight bookings not available")
+                time = int(input("enter number of hours of rental: "))
+            if int(entered_date[5:7]) in [1,3,5,7,8,10,12]:
+                days = 31
+            elif int(entered_date[5:7]) in [2,4,6,9,11]:
+                days = 30
+            else:
+                year = int(entered_date[:4])
+                is_leapyear = year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+                if is_leapyear:
+                    days = 29
+                else:
+                    days = 28
+            con_1 = (int(entered_date[:4]) < datetime.now().year) or not(0 < int(entered_date[8:10]) < days)
+            con_2 = (int(entered_date[5:7]) < datetime.now().month and int(entered_date[:4]) == datetime.now().year) or not(0 <int(entered_date[5:7]) < 12)
             con_3 = int(entered_date[8:10]) < datetime.now().day and int(entered_date[5:7]) == datetime.now().month and int(entered_date[:4]) == datetime.now().year
             con_4 = current_time <= datetime.now().hour and int(entered_date[8:10]) == datetime.now().day and int(entered_date[5:7]) == datetime.now().month and int(entered_date[:4]) == datetime.now().year
-
 
     for x in range(1 , len(temp_list)):
         if current_time not in range(temp_list[x][5] , temp_list[x][6]):
@@ -188,8 +214,8 @@ def customers():
             c1 = current_time in range(y[0] , y[1] + 1) and entered_date == y[2]
             c2 = (current_time + time) in range(y[0] , y[1] + 1) and entered_date == y[2]
             c3 = current_time <= y[0] <= y[1] + 1 <= current_time + time and entered_date == y[2]
-            print(c1 , c2 , c3)
-            print(current_time , current_time + time , entered_date)
+            # print(c1 , c2 , c3)
+            # print(current_time , current_time + time , entered_date)
             if c1 or c2 or c3:     
                 a,b,d,e,f,g,h,j,k= temp_list[x] #unpack and repack
 
@@ -213,7 +239,7 @@ def customers():
     for x in data.fetchall():
         
         li += [x[0]]
-    print(li)
+    # print(li)
     while code not in li:
         print("code doesnt exist")
         code = int(input("enter preffered service provider code from the table (0 to abort booking): "))
@@ -221,7 +247,7 @@ def customers():
             return None
             
         
-    print(".....")
+    print("...............................................")
     vehicle_code = int(input("enter vehicle code: "))
 
     data = c.execute("SELECT code , vehicle_code FROM service_providers")
@@ -260,23 +286,39 @@ def customers():
 
                     if (code , vehicle_code) == (data[y][0] , data[y][2]):
                         units = data[y][4]
-                        print(units)
+                        # print(units)
                         def reduce(code , vehicle_code, units , start_time , end_time):
                             # print(current_time , time)
                             if units == 0 or not(start_time <= current_time < current_time + time <= end_time ):  #to check if time is within valid time limit 
                                 if units == 0:   
                                     print("unsuccesful booking no units available")
+                                    print()
                                 else:
                                     print("sorry units not available for that time slot")
+                                    print()
                                 return None
                                
                             else:
                                 
-                                    print('booking succesful! Driver will pick you up at the provided adress at the requested time')
+                                  
+                                    print("BILL")
+                                    print()
+                                    print("name: ", customer_name_1)
+                                    print("adress: " , address)
+                                    print("service provider code: " , code)
+                                    print("time of booking: " , current_time , "to" , current_time + time)
                                     print("final cost is: " , data[y][7]*time)
-                                    c.execute("insert into customers_log(date , customer_name ,adress, code ,vehicle_code, start_time ,end_time ) values('{}', '{}','{}', {} , {} ,{}, {})".format(entered_date  ,customer_name_1, address ,code,vehicle_code, current_time , current_time + 1 + time )) #syntax for user input insert into table
-                                    base.commit()
-                                    return True
+                                    print()
+                                    confirm = input("please confirm your booking (y or n): ")
+                                    
+                                    if confirm == 'y':
+                                        print('booking succesful! Driver will pick you up at the provided adress at the requested time')
+                                        c.execute("insert into customers_log(date , customer_name ,adress, code ,vehicle_code, start_time ,end_time ) values('{}', '{}','{}', {} , {} ,{}, {})".format(entered_date  ,customer_name_1, address ,code,vehicle_code, current_time , current_time + 1 + time )) #syntax for user input insert into table
+                                        base.commit()
+                                        return True
+                                    else:
+                                        print("redirecting.....")
+                                        return True
                         reduce(data[y][0] , data[y][2] , units , data[y][5] , data[y][6])
 
 
@@ -316,32 +358,34 @@ def customers():
 
 #main
 
-choice = input('enter c for customer and s for service provider: ') 
-while choice not in ['c' , 's']:
-    print("sorry that was an invalid input please input ('c' or 's') ")
-    choice = input('enter c for customer and s for service provider: ')
+while True:
+    choice = input('enter c for customer and s for service provider and e for exit: ') 
+    while choice not in ['c' , 's','e']:
+        print("sorry that was an invalid input please input ('c' or 's' or 'e') ")
+        choice = input('enter c for customer and s for service provider and e for exit: ')
 
+    if choice == 's':
+        try: #exception handler to catch wrong input data type
+            service_providers()
+            # data = c.execute("select * from  service_providers")
+            # for x in data.fetchall():
+            #     print(x)
+        except:
+            print("sorry an error was raised please adhere to the input instructions")
+            # print("redirecting.....")
+            # service_providers()
 
-
-if choice == 's':
-    # try: #exception handler to catch wrong input data type
-    
-    service_providers()
-        # data = c.execute("select * from  service_providers")
-        # for x in data.fetchall():
-        #     print(x)
-    # except:
-    #     print("sorry an error was raised please adhere to the input instructions")
-        # print("redirecting.....")
-        # service_providers()
-
-elif choice == 'c':
-    try:  #exception handler to catch wrong input data type
+    elif choice == 'c':
+        # try:  #exception handler to catch wrong input data type
         customers()
-    except:
-        print("sorry an error was raised please adhere to the input instructions")
-        print("redirecting.....")
-        # customers()
+        # except:
+        #     print("sorry an error was raised please adhere to the input instructions")
+        #     print("redirecting.....")
+        #     customers()
+    elif choice == 'e':
+        print('Exiting')
+        break
+
 
 
 #function that checks if times in start and end time
